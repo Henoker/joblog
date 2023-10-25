@@ -1,6 +1,7 @@
 import main from '../assets/images/main.svg';
 import Wrapper from '../assets/wrappers/LandingPage';
-import Logo from '../components/Logo';
+import { Logo } from '../components';
+
 
 
 const Landing = () => {
@@ -8,7 +9,7 @@ const Landing = () => {
     <Wrapper>
         <main>
             <nav>
-                <Logo/>
+               <Logo/>
             </nav>
             <div className='container page'>
                 <div className='info'>
