@@ -1,8 +1,16 @@
 import React from "react";
 import { useReducer, useContext } from "react";
+import axios from 'axios';
 
 import reducer from "./reducer";
-import { DISPLAY_ALERT, CLEAR_ALERT } from "./actions";
+import {
+     DISPLAY_ALERT, 
+     CLEAR_ALERT,
+     REGISTER_USER_BEGIN,
+     REGISTER_USER_SUCCESS,
+     REGISTER_USER_ERROR,
+    } 
+    from "./actions";
 
 const initialState = {
     isLoading:false,
@@ -10,7 +18,9 @@ const initialState = {
     alertText:'',
     alertType:'',
     user:null,
-    token:null,
+    userLocation: '',
+    jobLocation:'',
+    
 }
 
 
@@ -32,7 +42,24 @@ const AppProvider = ({children}) => {
     }
 
     const registerUser = async (currentUser) => {
-        console.log(currentUser)
+        dispatch({ type: REGISTER_USER_BEGIN})
+        try {
+            const response = await axios.post('http://localhost:8000/api/v1/dj-rest-auth/registration/', currentUser)
+            console.log(response);
+            const {user, token, location} = response.data
+            dispatch({
+                type: REGISTER_USER_SUCCESS,
+                payload: {user, token, location}
+            })
+        } catch (error) {
+            console.log(error)
+            dispatch({
+                type:REGISTER_USER_ERROR,
+                payload: {msg: error.response.data.msg },
+            })
+            
+        }
+        clearAlert()
     }
     return <AppContext.Provider value={{...state, displayAlert, clearAlert, registerUser}}>
         {children}
