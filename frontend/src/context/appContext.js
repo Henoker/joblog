@@ -2,7 +2,6 @@ import React from "react";
 import { useReducer, useContext } from "react";
 import axios from 'axios';
 
-import reducer from "./reducer";
 import {
      DISPLAY_ALERT, 
      CLEAR_ALERT,
@@ -26,6 +25,48 @@ const initialState = {
 
 const AppContext = React.createContext()
 
+const reducer = (state, action) => {
+    switch (action.type) {
+      case DISPLAY_ALERT:
+        return {
+          ...state,
+          showAlert: true,
+          alertText: action.payload.text,
+          alertType: action.payload.type,
+        };
+      case CLEAR_ALERT:
+        return {
+          ...state,
+          showAlert: false,
+          alertText: '',
+          alertType: '',
+        };
+      case REGISTER_USER_BEGIN:
+        return {
+          ...state,
+          isLoading: true,
+        };
+      case REGISTER_USER_SUCCESS:
+        return {
+          ...state,
+          isLoading: false,
+          user: action.payload.user,
+          userLocation: action.payload.location,
+        };
+      case REGISTER_USER_ERROR:
+        return {
+          ...state,
+          isLoading: false,
+          showAlert: true,
+          alertText: action.payload.msg,
+          alertType: 'error',
+        };
+      default:
+        return state;
+    }
+  };
+  
+
 const AppProvider = ({children}) => {
     const [state, dispatch] = useReducer(reducer, initialState)
 
@@ -41,27 +82,42 @@ const AppProvider = ({children}) => {
         
     }
 
+
     const registerUser = async (currentUser) => {
-        dispatch({ type: REGISTER_USER_BEGIN})
+        dispatch({ type: REGISTER_USER_BEGIN });
+      
         try {
-            const response = await axios.post('http://localhost:8000/api/v1/dj-rest-auth/registration/', currentUser)
-            console.log(response);
-            const {user, token, location} = response.data
-            dispatch({
-                type: REGISTER_USER_SUCCESS,
-                payload: {user, token, location}
-            })
+          const response = await axios.post('http://localhost:8000/api/v1/dj-rest-auth/registration/', currentUser);
+          console.log(response);
+          const { user, token, location } = response.data;
+          dispatch({
+            type: REGISTER_USER_SUCCESS,
+            payload: { user, token, location },
+          });
+      
+          // Display success alert
+          displayAlert({
+            text: 'Registration successful',
+            type: 'success',
+          });
+      
         } catch (error) {
-            console.log(error)
-            dispatch({
-                type:REGISTER_USER_ERROR,
-                payload: {msg: error.response.data.msg },
-            })
-            
+          console.log(error);
+          dispatch({
+            type: REGISTER_USER_ERROR,
+            payload: { msg: error.response.data.msg },
+          });
+      
+          // Display error alert
+          displayAlert({
+            text: 'Error registering user',
+            type: 'error',
+          });
         }
-        clearAlert()
-    }
-    return <AppContext.Provider value={{...state, displayAlert, clearAlert, registerUser}}>
+      
+        clearAlert();
+      };
+    return <AppContext.Provider value={{...state, displayAlert, clearAlert, registerUser, dispatch}}>
         {children}
     </AppContext.Provider>
 }

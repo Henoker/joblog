@@ -113,18 +113,28 @@
 //     </Wrapper>
 //   )
 // }
-import {useEffect, useState} from 'react';
+import { useState} from 'react';
+import Wrapper from '../assets/wrappers/RegisterPage';
+import { Logo, Alert } from '../components';
 import axios from 'axios';
-import { Logo , Alert } from '../components';
+
 
 
 const Register = () => {
-    const [formData, setFormData] = useState({
+
+  const [formData, setFormData] = useState({
       username: "",
       email: "",
       password1: "",
       password2: "",
-    });
+  });
+
+  const [displayAlert, setDisplayAlert] = useState(false);
+  const [alertType, setAlertType] = useState("");
+  const [alertMessage, setAlertMessage] = useState("");
+  
+
+   
   
     const handleChange = (e) => {
       setFormData({
@@ -135,62 +145,86 @@ const Register = () => {
   
     const handleSubmit = (e) => {
       e.preventDefault();
-  
+    
       axios
         .post("http://localhost:8000/api/v1/dj-rest-auth/registration/", formData)
         .then((response) => {
           console.log("Registration successful", response.data);
+          setDisplayAlert(true);
+          setAlertType('success');
+          setAlertMessage('Registration successful');
+          setFormData({
+            username: "",
+            email: "",
+            password1: "",
+            password2: "",
+          });
+          setTimeout(() => {
+            setDisplayAlert(false);
+          }, 3000);
         })
         .catch((error) => {
           console.error("Error registering user", error);
+          setDisplayAlert(true);
+          setAlertType('error');
+          setAlertMessage('Error registering user');
+          setTimeout(() => {
+            setDisplayAlert(false);
+          }, 3000);
         });
     };
   
     return (
-      <form className='form' onSubmit={handleSubmit}>
-        <Logo />
-        <div className='form-row'>
-        <label className='form-label'>Username:</label>
-        <input
-          type="text"
-          name="username"
-          value={formData.username}
-          onChange={handleChange}
-          className='form-input' 
-        />
-      </div>
-      <div className='form-row'>
-        <label className='form-label'>Email:</label>
-        <input
-          type="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          className='form-input' 
-        />
-      </div>
-      <div className='form-row'>
-        <label className='form-label'>Password:</label>
-        <input
-          type="password"
-          name="password1"
-          value={formData.password1}
-          onChange={handleChange}
-          className='form-input' 
-        />
-      </div>
-      <div className='form-row'>
-        <label className='form-label'>Confirm Password:</label>
-        <input
-          type="password"
-          name="password2"
-          value={formData.password2}
-          onChange={handleChange}
-          className='form-input' 
-        />
-      </div>
-        <button type="submit" className='btn btn-block'>Register</button>
-      </form>
+        <Wrapper>
+            <form className='form' onSubmit={handleSubmit}>
+                <Logo />
+                <h3>Register</h3>
+                {alertType && <Alert type={alertType} message={alertMessage} />}
+                <div className='form-row'>
+                    <label className='form-label'>Username:</label>
+                    <input
+                    type="text"
+                    name="username"
+                    value={formData.username}
+                    onChange={handleChange}
+                    className='form-input' 
+                    />
+                </div>
+                <div className='form-row'>
+                    <label className='form-label'>Email:</label>
+                    <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className='form-input' 
+                    />
+                </div>
+                <div className='form-row'>
+                    <label className='form-label'>Password:</label>
+                    <input
+                    type="password"
+                    name="password1"
+                    value={formData.password1}
+                    onChange={handleChange}
+                    className='form-input' 
+                    />
+                </div>
+                <div className='form-row'>
+                    <label className='form-label'>Confirm Password:</label>
+                    <input
+                    type="password"
+                    name="password2"
+                    value={formData.password2}
+                    onChange={handleChange}
+                    className='form-input' 
+                    />
+                </div>
+                <button type="submit" className='btn btn-block'>Register</button>
+            </form>
+
+        </Wrapper>
+      
     );
   };
   

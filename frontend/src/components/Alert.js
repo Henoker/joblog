@@ -1,9 +1,11 @@
-import React from 'react'
-import { useAppContext } from '../context/appContext'
+import React from 'react';
 
-const Alert = () => {
-  const { alertType, alertText} = useAppContext()
-  return <div className={`alert alert-${alertType}`}>{alertText}</div>
+const Alert = ({ type, message }) => {
+  return (
+    <div className={`alert alert-${type}`}>
+      {message}
+    </div>
+  );
 }
 
-export default Alert
+export default Alert;
