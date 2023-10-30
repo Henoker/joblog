@@ -16,7 +16,7 @@ SECRET_KEY = env.str("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DEBUG", default=False)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]']
 
 AUTH_USER_MODEL = "accounts.CustomUser"
 # Application definition
@@ -72,6 +72,10 @@ CORS_ORIGIN_WHITELIST = (
 
 CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]
 
+CORS_ALLOW_CREDENTIALS = True
+
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = None
 
 ROOT_URLCONF = 'jobapi.urls'
 

@@ -1,25 +1,27 @@
-import { useState} from 'react';
+import { useState } from 'react';
 import Wrapper from '../assets/wrappers/RegisterPage';
 import { Logo, Alert } from '../components';
-import axios from 'axios';
+import axios from '../axiosConfig';
 import { useNavigate } from 'react-router-dom';
 
 
-
-const Register = () => {
-  const navigate = useNavigate();
-  const [formData, setFormData] = useState({
+const Login = () => {
+    const navigate = useNavigate();
+    const [formData, setFormData] = useState({
       username: "",
-      email: "",
-      password1: "",
-      password2: "",
+      password: "",
   });
 
   const [displayAlert, setDisplayAlert] = useState(false);
   const [alertType, setAlertType] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
   
-
+//   useEffect(() => {
+//     // Fetch CSRF token from Django backend
+//     axios.get("http://localhost:8000/csrf_cookie/").then((response) => {
+//       // You don't need to do anything with the response, just make the request to get the CSRF token
+//     });
+//   }, []);
    
   
     const handleChange = (e) => {
@@ -31,19 +33,20 @@ const Register = () => {
   
     const handleSubmit = (e) => {
       e.preventDefault();
+
+      axios.defaults.xsrfCookieName = 'csrftoken'; 
+      axios.defaults.xsrfHeaderName = 'X-CSRFToken'
     
       axios
-        .post("http://localhost:8000/api/v1/dj-rest-auth/registration/", formData)
+        .post("api-auth/login/", formData)
         .then((response) => {
-          console.log("Registration successful", response.data);
+          console.log("Login successful", response.data);
           setDisplayAlert(true);
           setAlertType('success');
-          setAlertMessage('Registration successful');
+          setAlertMessage('Login successful');
           setFormData({
             username: "",
-            email: "",
-            password1: "",
-            password2: "",
+            password: "",
           });
           setTimeout(() => {
             setDisplayAlert(false);
@@ -53,10 +56,10 @@ const Register = () => {
           }, 3000);
         })
         .catch((error) => {
-          console.error("Error registering user", error);
+          console.log("Error Loogging in", error);
           setDisplayAlert(true);
           setAlertType('error');
-          setAlertMessage('Error registering user');
+          setAlertMessage('Error logging in. Please Try again');
           setTimeout(() => {
             setDisplayAlert(false);
             setAlertType('');
@@ -69,7 +72,7 @@ const Register = () => {
         <Wrapper>
             <form className='form' onSubmit={handleSubmit}>
                 <Logo />
-                <h3>Register</h3>
+                <h3>Login</h3>
                 {alertType && <Alert type={alertType} message={alertMessage} />}
                 <div className='form-row'>
                     <label className='form-label'>Username:</label>
@@ -82,44 +85,21 @@ const Register = () => {
                     />
                 </div>
                 <div className='form-row'>
-                    <label className='form-label'>Email:</label>
-                    <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className='form-input' 
-                    />
-                </div>
-                <div className='form-row'>
                     <label className='form-label'>Password:</label>
                     <input
                     type="password"
-                    name="password1"
+                    name="password"
                     value={formData.password1}
                     onChange={handleChange}
                     className='form-input' 
                     />
                 </div>
-                <div className='form-row'>
-                    <label className='form-label'>Confirm Password:</label>
-                    <input
-                    type="password"
-                    name="password2"
-                    value={formData.password2}
-                    onChange={handleChange}
-                    className='form-input' 
-                    />
-                </div>
-                <button type="submit" className='btn btn-block'>Register</button>
+                <button type="submit" className='btn btn-block'>Submit</button>
             </form>
 
         </Wrapper>
       
     );
-  };
-  
+}
 
-
-
-export default Register
+export default Login
