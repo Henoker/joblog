@@ -27,3 +27,5 @@ class Job(models.Model):
     
     def __str__(self):
         return self.company
+
+# Create your models here.
