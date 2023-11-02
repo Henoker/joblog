@@ -123,11 +123,10 @@
 
 
 // export default Register
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Alert, FormRow, Logo } from '../components'
 import Wrapper from '../assets/wrappers/RegisterPage'
 import { useAppContext } from '../context/appContext'
-// global context and useNavigate later
 
 const initialState = {
   name: '',
@@ -136,95 +135,95 @@ const initialState = {
   password1: '',
   password2: '',
   isMember: true,
-  showAlert:false,
+ 
 }
-// if possible prefer local state
-// global state
 
 const Register = () => {
   const [values, setValues] = useState(initialState)
+  const {isLoading, showAlert, displayAlert}  = useAppContext()
 
-  // global context and useNavigate later
-  const state = useAppContext()
-  console.log(state)
   const toggleMember = () => {
-    setValues({...values, isMember: !values.isMember})
+    setValues({ ...values, isMember: !values.isMember })
   }
+
   const handleChange = (e) => {
-    console.log(e.target)
+    setValues({ ...values, [e.target.name]: e.target.value })
   }
 
   const onSubmit = (e) => {
     e.preventDefault()
-    console.log(e.target)
+    const {name, email, password, password1, password2, isMember} = values
+    if (!email || !password || (!isMember && !name && !password1 && password2)){
+      displayAlert()
+      return
+    }
+    console.log(values)
   }
+
   return (
     <Wrapper className='full-page'>
       <form className='form' onSubmit={onSubmit}>
         <Logo />
-        {values.showAlert && <Alert/>}
-        <h3>{values.isMember ? 'Login': 'Register'}</h3>
+        {showAlert && <Alert />}
+        <h3>{values.isMember ? 'Login' : 'Register'}</h3>
 
-        {/* name field */}
         {!values.isMember && (
-          <>
-          <FormRow
-          type='text'
-          name='name'
-          value={values.name}
-          handleChange={handleChange}
-          />
-          <FormRow
-          type='password'
-          name='password1'
-          value={values.password1}
-          handleChange={handleChange}
-          />
-          <FormRow
-          type='password'
-          name='password2'
-          value={values.password2}
-          handleChange={handleChange}
-          />
-          </>
-          
-
-        )}
-        
-        <FormRow
-        type='email'
-        name='email'
-        value={values.email}
-        handleChange={handleChange}
-        />
-        <FormRow
-          type='password'
-          name='password'
-          value={values.password}
-          handleChange={handleChange}
-        />
-        
-        {/* <div className='form-row'>
-          <label htmlFor='name' className='form-label'>
-            name
-          </label>
-
-          <input
-            type='text'
+          <> 
+          <div className='form-row'>
+            <label className='form-label'>Name</label>
+            <input
+            type="text"
+            name="name"
             value={values.name}
-            name='name'
             onChange={handleChange}
-            className='form-input'
+            className='form-input' 
+            />
+          </div>
+          <div className='form-row'>
+            <label className='form-label'>Password</label>
+            <input
+            type="password"
+            name="password1"
+            value={values.password1}
+            onChange={handleChange}
+            className='form-input' 
+            />
+          </div>
+          <div className='form-row'>
+            <label className='form-label'>Confirm Password</label>
+            <input
+            type="password"
+            name="password2"
+            value={values.password2}
+            onChange={handleChange}
+            className='form-input' 
+            />
+          </div>
+          </>
+        )}
+
+        <FormRow
+          type='email'
+          name='email'
+          value={values.email}
+          handleChange={handleChange}
+        />
+        {values.isMember && (
+          <FormRow
+            type='password'
+            name='password'
+            value={values.password}
+            handleChange={handleChange}
           />
-        </div> */}
+        )}
 
         <button type='submit' className='btn btn-block'>
           submit
         </button>
         <p>
-          {values.isMember ? 'Not a member yet?' :'Already a member?'}
+          {values.isMember ? 'Not a member yet?' : 'Already a member?'}
           <button type='button' onClick={toggleMember} className='member-btn'>
-            {values.isMember ? 'Register': 'Login'}
+            {values.isMember ? 'Register' : 'Login'}
           </button>
         </p>
       </form>
